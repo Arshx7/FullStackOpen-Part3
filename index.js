@@ -20,6 +20,12 @@ const persons = [
     number: "39-23-6423122",
   },
 ];
+function getCurrentTime() {
+  const date = new Date();
+  return `<p>Phonebook has info for ${
+    persons.length
+  } people</p> ${date.toString()}`;
+}
 
 const express = require("express");
 const app = express();
@@ -27,9 +33,14 @@ const app = express();
 app.get("/", (req, res) => {
   res.send("<h1>Hellllooooo</<h1>");
 });
-app.get("/api/persons",(req,res) => {
-    res.json(persons)
-})
+app.get("/api/persons", (req, res) => {
+  res.json(persons);
+});
+
+app.get("/info", (req, res) => {
+  res.send(getCurrentTime());
+});
+
 
 const PORT = 3001;
 app.listen(PORT, () => {
