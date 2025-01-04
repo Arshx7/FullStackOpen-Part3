@@ -1,4 +1,4 @@
-const persons = [
+let persons = [
   {
     id: "1",
     name: "Arto Hellas",
@@ -29,6 +29,7 @@ function getCurrentTime() {
 
 const express = require("express");
 const app = express();
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("<h1>Hellllooooo</<h1>");
@@ -43,14 +44,21 @@ app.get("/info", (req, res) => {
 
 app.get("/api/persons/:id", (req, res) => {
   const id = req.params.id;
-  const note = persons.find((note) => id === note.id);
-  if(note) {
-    res.json(note);
+  const person = persons.find((person) => id === person.id);
+  if (person) {
+    res.json(person);
   } else {
-    res.status(404).end()
+    res.status(404).end();
   }
-  
 });
+
+app.delete("/api/persons/:id", (req, res) => {
+  const id = req.params.id;
+  persons = persons.filter((person) => id !== person.id);
+  console.log(persons);
+  res.status(204).end()
+});
+
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`server running on port ${PORT}`);
