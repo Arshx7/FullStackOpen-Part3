@@ -41,7 +41,16 @@ app.get("/info", (req, res) => {
   res.send(getCurrentTime());
 });
 
-
+app.get("/api/persons/:id", (req, res) => {
+  const id = req.params.id;
+  const note = persons.find((note) => id === note.id);
+  if(note) {
+    res.json(note);
+  } else {
+    res.status(404).end()
+  }
+  
+});
 const PORT = 3001;
 app.listen(PORT, () => {
   console.log(`server running on port ${PORT}`);
