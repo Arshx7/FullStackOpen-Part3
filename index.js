@@ -29,8 +29,10 @@ function getCurrentTime() {
 
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 
 morgan.token("body", function (req) {
@@ -91,6 +93,12 @@ app.post("/api/persons/", (req, res) => {
 
   res.status(201).json(newPerson);
 });
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
 
 const PORT = 3001;
 app.listen(PORT, () => {
