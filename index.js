@@ -20,22 +20,25 @@ let persons = [
     number: "39-23-6423122",
   },
 ];
+
+require('dotenv').config();
+const Person = require('./models/person')
+const express = require("express");
+const morgan = require("morgan");
+const cors = require("cors");
+const app = express();
+
+
+app.use(cors());
+app.use(express.json());
+app.use(express.static("dist"));
+
 function getCurrentTime() {
   const date = new Date();
   return `<p>Phonebook has info for ${
     persons.length
   } people</p> ${date.toString()}`;
 }
-
-const express = require("express");
-const morgan = require("morgan");
-const cors = require("cors");
-const app = express();
-
-app.use(cors());
-app.use(express.json());
-app.use(express.static("dist"));
-
 morgan.token("body", function (req) {
   return JSON.stringify(req.body);
 });
@@ -48,7 +51,9 @@ app.get("/", (req, res) => {
   res.send("<h1>Hellllooooo</<h1>");
 });
 app.get("/api/persons", (req, res) => {
-  res.json(persons);
+  Person.find({}).then(person=>{
+    res.json(person)
+  }) 
 });
 
 app.get("/info", (req, res) => {
