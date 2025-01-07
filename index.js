@@ -21,13 +21,12 @@ let persons = [
   },
 ];
 
-require('dotenv').config();
-const Person = require('./models/person')
+require("dotenv").config();
+const Person = require("./models/person");
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const app = express();
-
 
 app.use(cors());
 app.use(express.json());
@@ -51,9 +50,9 @@ app.get("/", (req, res) => {
   res.send("<h1>Hellllooooo</<h1>");
 });
 app.get("/api/persons", (req, res) => {
-  Person.find({}).then(person=>{
-    res.json(person)
-  }) 
+  Person.find({}).then((person) => {
+    res.json(person);
+  });
 });
 
 app.get("/info", (req, res) => {
@@ -62,12 +61,13 @@ app.get("/info", (req, res) => {
 
 app.get("/api/persons/:id", (req, res) => {
   const id = req.params.id;
-  const person = persons.find((person) => id === person.id);
-  if (person) {
-    res.json(person);
-  } else {
-    res.status(404).end();
-  }
+  Person.findById(id).then((person) => {
+    if (person) {
+      res.json(person);
+    } else {
+      res.status(404).end();
+    }
+  });
 });
 
 app.delete("/api/persons/:id", (req, res) => {
@@ -78,26 +78,28 @@ app.delete("/api/persons/:id", (req, res) => {
 });
 
 app.post("/api/persons/", (req, res) => {
-  const person = req.body;
+  const body = req.body;
 
-  if (!person.name) {
+  if (!body.name) {
     return res.status(400).json({ error: "Name is missing" });
   }
 
-  if (!person.number) {
+  if (!body.number) {
     return res.status(400).json({ error: "Number is missing" });
   }
 
-  const nameExists = persons.find((p) => p.name === person.name);
+  const nameExists = persons.find((p) => p.name === body.name);
   if (nameExists) {
     return res.status(400).json({ error: "Name must be unique" });
   }
 
-  let id = Math.floor(Math.random() * 1000000);
-  const newPerson = { ...person, id: String(id) };
-  persons = persons.concat(newPerson);
-
-  res.status(201).json(newPerson);
+  const person = new Person({
+    name: body.name,
+    number: body.number,
+  });
+  person.save().then((savedNote) => {
+    res.status(201).json(savedNote);
+  });
 });
 
 const unknownEndpoint = (request, response) => {
